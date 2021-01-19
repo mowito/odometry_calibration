@@ -1,0 +1,7 @@
+<launch>
+  <rosparam command="load" file="$(find odometry_calibration)/config/config.yaml"/> <!--Load parameters from config files-->
+  <param name="package_path" type="str" value="$(find odometry_calibration)" />
+  
+  <node name="odometry_calibration_node" type="calibrate_odometry.py" pkg="odometry_calibration" output="screen">
+  </node>
+</launch>
