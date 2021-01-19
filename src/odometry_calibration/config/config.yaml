@@ -1,0 +1,6 @@
+linear_odometry_topic: "/odometry/linear"
+angular_odometry_topic: "/odometry/angular"
+calibration_topic: "/calibrate_odom"
+wheel_radius: 0.08               # [m]
+wheel_dist: 0.43                 # [m]
+fig_name: "odom"
