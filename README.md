@@ -5,7 +5,7 @@ Tool for calibrating wheel odometry. Determines the correction factors required 
 The linear and angular veocities of a 2-wheel differential drive robot are calculated as:
 
 <img src="https://latex.codecogs.com/gif.latex?V_%7Blin%7D%20%3D%20%5Cfrac%7Br%7D%7B2%7D%20*%20(%7B%5Comega%7D_r%20%2B%20%7B%5Comega%7D_l)%20*%20C_%7Bf%2Clin%7D" /> \
-<img src="https://latex.codecogs.com/gif.latex?%5Comega%20%3D%20%5Cfrac%7Br%7D%7Bd%7D%20*%20(%7B%5Comega%7D_r%20-%20%7B%5Comega%7D_l)%20*%20C_%7Bf%2Cang%7D" /> \
+<img src="https://latex.codecogs.com/gif.latex?%5Comega%20%3D%20%5Cfrac%7Br%7D%7Bd%7D%20*%20(%7B%5Comega%7D_r%20-%20%7B%5Comega%7D_l)%20*%20C_%7Bf%2Cang%7D" />
 
 <img src="https://latex.codecogs.com/gif.latex?\text{Where,}" /> \
 <img src="https://latex.codecogs.com/gif.latex?V_%7Blin%7D%20%3D%20%5Ctext%7BLinear%20velocity%7D" /> \
