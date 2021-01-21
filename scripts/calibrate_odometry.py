@@ -24,17 +24,14 @@ class OdometryCalibrationNode():
         self.ax1.axis("equal")
         self.ax2.axis("equal")
 
-        self.linear_odometry_topic = rospy.get_param("linear_odometry_topic", "/odometry/linear")
-        self.angular_odometry_topic = rospy.get_param("angular_odometry_topic", "/odometry/angular")
+        self.odometry_topic = rospy.get_param("odometry_topic", "/odometry")
         self.calibration_topic = rospy.get_param("calibration_topic", "/calibrate_odom")
         self.wheel_radius = rospy.get_param("wheel_radius", 0.08)
         self.wheel_dist = rospy.get_param("wheel_dist", 0.43)
         self.fig_name = rospy.get_param("fig_name", "odom_calib")
         self.package_path = rospy.get_param("package_path", expanduser("~"))
-        self.left_encoder_list_linear = []
-        self.right_encoder_list_linear = []
-        self.left_encoder_list_angular = []
-        self.right_encoder_list_angular = []
+        self.left_encoder_list = []
+        self.right_encoder_list = []
         self.linear_cf = 1
         self.angle_cf = 1
 
@@ -43,8 +40,7 @@ class OdometryCalibrationNode():
         self.blue = '\u001b[34m'
 
     def run(self):
-        self.linear_odometry_sub = rospy.Subscriber(self.linear_odometry_topic, Odometry, self.linear_odom_callback)
-        self.angular_odometry_sub = rospy.Subscriber(self.angular_odometry_topic, Odometry, self.angular_odom_callback)
+        self.odometry_sub = rospy.Subscriber(self.odometry_topic, Odometry, self.odom_callback)
         self.calibration_sub = rospy.Subscriber(self.calibration_topic, Vector3, self.calibrate_callback)
     
     def calculate_correction_factor(self, pose_x_list, angle_list):
@@ -57,13 +53,9 @@ class OdometryCalibrationNode():
         print(self.green + f"Correction factors:\n Linear: {self.linear_cf} \n Angular: {self.angle_cf}")
         self.velocity_to_pose("_with_cf.png")
 
-    def linear_odom_callback(self, msg):
-        self.left_encoder_list_linear.append(msg.twist.twist.angular.x)
-        self.right_encoder_list_linear.append(msg.twist.twist.angular.y)
-
-    def angular_odom_callback(self, msg):
-        self.left_encoder_list_angular.append(msg.twist.twist.angular.x)
-        self.right_encoder_list_angular.append(msg.twist.twist.angular.y)
+    def odom_callback(self, msg):
+        self.left_encoder_list.append(msg.twist.twist.angular.x)
+        self.right_encoder_list.append(msg.twist.twist.angular.y)
 
     def calibrate_callback(self, msg):
         self.ground_truth_x = msg.x
@@ -94,15 +86,14 @@ class OdometryCalibrationNode():
         pose_y_list = []
         angle_list  = []
         count_list  = []
-
         
         self.pose.x = 0.0
         self.pose.y = 0.0
         self.pose.theta = 0.0
         # Convert angular velocity for angle calibration
         print(self.blue + f"Running with linear CF = {self.linear_cf} and angular CF = {self.angle_cf}")
-        for i in range(len(self.left_encoder_list_angular)):
-            v_x, v_y, w = self.encoder_to_velocity(self.left_encoder_list_angular[i], self.left_encoder_list_angular[i])
+        for i in range(len(self.left_encoder_list)):
+            v_x, v_y, w = self.encoder_to_velocity(self.right_encoder_list[i], self.left_encoder_list[i])
             dt = 0.1
             dtheta = w*dt
             self.pose.theta = (self.pose.theta + dtheta)
@@ -113,8 +104,8 @@ class OdometryCalibrationNode():
         self.pose.y = 0.0
         self.pose.theta = 0.0
         # Convert Encoder data to Pose data for linear calibration
-        for i in range(len(self.left_encoder_list_linear)):
-            v_x, v_y, w = self.encoder_to_velocity(self.left_encoder_list_linear[i], self.left_encoder_list_angular[i])
+        for i in range(len(self.left_encoder_list)):
+            v_x, v_y, w = self.encoder_to_velocity(self.right_encoder_list[i], self.left_encoder_list[i])
             dt = 0.1
             dx = (v_x*math.cos(self.pose.theta) - v_y*math.sin(self.pose.theta))*dt
             dy = (v_x*math.sin(self.pose.theta) + v_y*math.cos(self.pose.theta))*dt
