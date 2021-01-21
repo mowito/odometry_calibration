@@ -38,7 +38,7 @@ To publish robot ground truth pose in a new terminal, run \
 `rostopic pub /calibrate_odom geometry_msgs/Vector3 <x> <y> <theta>` \
 The linear and angular correction factors are printed on the terminal window and two plots are saved in the package directory.
 
-Default configuration is stored in `mw_tools/config/config.yaml`
+Default configuration is stored in `odometry_calibration/config/config.yaml`
 
 #### Parameters
 - `odometry_topic` \
